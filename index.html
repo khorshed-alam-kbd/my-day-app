@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="My Day">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#f3f4f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11141c" media="(prefers-color-scheme: dark)">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} [hidden]{display:none!important}</style>
+<title>My Moscow Week</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single phone column — live "Now" card, today's timeline, then the rest of the week folded below */
+:root {
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --fg: #1b2030;
+  --muted: #646b7f;
+  --line: #e1e4ec;
+  --accent: #b8452b;
+  --accent-soft: #f6e4de;
+  --c-work: #c27a12;
+  --c-class: #2f5fc4;
+  --c-study: #1d8a73;
+  --c-faith: #3d8a3a;
+  --c-wife: #c2416d;
+  --c-travel: #7c8396;
+  --c-routine: #5b6478;
+  --c-sleep: #5a4fb8;
+  --f-display: "Unbounded", "Onest", system-ui, sans-serif;
+  --f-body: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11141c; --surface: #1a1e29; --fg: #e8eaf0; --muted: #9aa1b4; --line: #2a2f3d;
+    --accent: #e8735a; --accent-soft: #3a2420;
+    --c-work: #e9a23b; --c-class: #6f97f0; --c-study: #45c2a5; --c-faith: #74c36f;
+    --c-wife: #ec7aa0; --c-travel: #8f96a8; --c-routine: #98a0b5; --c-sleep: #9a90f0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11141c; --surface: #1a1e29; --fg: #e8eaf0; --muted: #9aa1b4; --line: #2a2f3d;
+  --accent: #e8735a; --accent-soft: #3a2420;
+  --c-work: #e9a23b; --c-class: #6f97f0; --c-study: #45c2a5; --c-faith: #74c36f;
+  --c-wife: #ec7aa0; --c-travel: #8f96a8; --c-routine: #98a0b5; --c-sleep: #9a90f0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--f-body); font-size: 15px; line-height: 1.45;
+}
+.wrap {
+  max-width: 560px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: 26px; margin: 2px 0 0; text-wrap: balance; }
+.clock { font-family: var(--f-mono); font-size: 28px; font-variant-numeric: tabular-nums; text-align: right; }
+.clock small { display: block; font-family: var(--f-body); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+
+.now {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.now .label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.now .what { font-family: var(--f-display); font-weight: 500; font-size: 20px; line-height: 1.25; text-wrap: balance; }
+.now .note { color: var(--muted); font-size: 14px; }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s; }
+.next { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+.next b { font-weight: 600; }
+.next .in { font-family: var(--f-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+h2 { font-family: var(--f-display); font-weight: 500; font-size: 17px; margin: 0; }
+.dayhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.tag { font-size: 13px; color: var(--muted); }
+
+ol.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+ol.tl li {
+  display: grid; grid-template-columns: 92px 1fr; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+ol.tl li:last-child { border-bottom: 0; }
+.t { font-family: var(--f-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.title { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--c); }
+.n { color: var(--muted); font-size: 14px; }
+li.past .title, li.past .n { opacity: .5; }
+li.current { background: var(--accent-soft); border-radius: 10px; padding-inline: 10px; margin-inline: -10px; border-bottom-color: transparent; }
+li.current .t { color: var(--accent); }
+
+.today-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px 6px; display: flex; flex-direction: column; gap: 8px; }
+
+.week { display: flex; flex-direction: column; gap: 8px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+summary {
+  list-style: none; cursor: pointer; padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+}
+summary::-webkit-details-marker { display: none; }
+summary .d { font-weight: 600; }
+summary .tag::after { content: " +"; font-family: var(--f-mono); }
+details[open] summary .tag::after { content: " −"; }
+summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 12px; }
+details ol.tl { padding: 0 16px 6px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+footer { font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow" id="dateline">Moscow</div>
+      <h1 id="dayname">Today</h1>
+    </div>
+    <div class="clock"><span id="clock">--:--</span><small>Moscow time</small></div>
+  </header>
+
+  <section class="now" aria-live="polite">
+    <div class="label">Now</div>
+    <div class="what" id="nowWhat">Loading</div>
+    <div class="note" id="nowNote"></div>
+    <div class="bar" aria-hidden="true"><i id="nowBar"></i></div>
+    <div class="next"><span>Next: <b id="nextWhat"></b></span><span class="in" id="nextIn"></span></div>
+  </section>
+
+  <section class="today-card">
+    <div class="dayhead"><h2>Today's schedule</h2><span class="tag" id="todayTag"></span></div>
+    <ol class="tl" id="todayList"></ol>
+  </section>
+
+  <section class="week">
+    <h2>Rest of the week</h2>
+    <div class="week" id="week"></div>
+  </section>
+
+  <div class="legend" id="legend"></div>
+  <footer>4-day work plan: Rostics Mon, Tue, Wed (6:30 start), Sat. Classes at HSE Mon to Thu 18:00 to 21:00, plus Thursday 13:00 online. Check prayer times in your app; they shift through winter.</footer>
+</div>
+
+<script>
+const CAT = {
+  work: ["Work", "--c-work"], class: ["Class", "--c-class"], study: ["Study", "--c-study"],
+  faith: ["Faith", "--c-faith"], wife: ["Wife", "--c-wife"], travel: ["Travel", "--c-travel"],
+  routine: ["Routine", "--c-routine"], sleep: ["Sleep", "--c-sleep"]
+};
+const morning = [
+  ["06:00","06:15","Wake up, Fajr","Lights on, alarm across the room","routine"],
+  ["06:15","06:25","Quick SAVERS","1 to 2 min each; reading moves to the metro","routine"],
+  ["06:25","06:55","Shower, dress, breakfast","Pack lunch and an evening snack","routine"],
+  ["07:05","07:55","Commute to work","Metro study: lecture notes or flashcards","travel"]
+];
+const toClass = [
+  ["17:00","17:40","Travel to HSE","15 min walk + 20 min metro","travel"],
+  ["17:40","18:00","Dinner","Eat before class","routine"],
+  ["18:00","21:00","Class at HSE","In person","class"],
+  ["21:05","22:00","Travel home","Light review or a podcast","travel"]
+];
+const WEEK = {
+  1: { tag: "Work + class", items: [...morning,
+    ["08:00","17:00","Work at Rostics","Lunch: eat, then call your wife; pray on breaks","work"],
+    ...toClass,
+    ["22:00","22:45","Wind down","Shower, lay out clothes, call your wife","routine"],
+    ["22:45","23:00","Screens off","Set tomorrow's intention","routine"],
+    ["23:00","06:00","Sleep","7 hours","sleep"] ]},
+  2: { tag: "Work + class, early night", items: [...morning,
+    ["08:00","17:00","Work at Rostics","Lunch call with your wife","work"],
+    ...toClass,
+    ["22:00","22:15","Prepare for Wednesday","Uniform out, food packed, alarm 4:45","routine"],
+    ["22:15","04:45","Sleep","6.5 hours, no phone in bed","sleep"] ]},
+  3: { tag: "Early shift + class", items: [
+    ["04:45","04:50","Wake up","Bright light, glass of water","routine"],
+    ["04:50","05:05","Micro SAVERS","Silence, affirmations, visualization; Fajr when its time enters","routine"],
+    ["05:05","05:30","Dress, quick breakfast","Food packed the night before","routine"],
+    ["05:35","06:25","Commute to work","Reading on the metro","travel"],
+    ["06:30","17:00","Early shift at Rostics","15 min power nap on your break","work"],
+    ...toClass,
+    ["22:00","22:45","Wind down","Call your wife; no alarm for Thursday","routine"],
+    ["23:00","07:30","Sleep","8.5 hours","sleep"] ]},
+  4: { tag: "Study + two classes", items: [
+    ["07:30","07:45","Wake up, Fajr","Pray before sunrise","routine"],
+    ["07:45","08:45","Full SAVERS","60 min with 20 min exercise","routine"],
+    ["08:45","09:00","Breakfast","","routine"],
+    ["09:00","12:30","Deep study","Assignments, coding, projects; 50 min on, 10 off","study"],
+    ["12:30","13:00","Lunch, Dhuhr","","faith"],
+    ["13:00","16:00","Online class","From your dorm","class"],
+    ["16:00","17:00","Dinner, rest, Asr","Short walk outside","routine"],
+    ["17:05","17:55","Travel to HSE","20 min walk + 30 min metro","travel"],
+    ["18:00","21:00","Class at HSE","In person","class"],
+    ["21:05","22:00","Travel home","","travel"],
+    ["22:00","23:15","Free time","Call your wife, relax, plan Friday","wife"],
+    ["23:30","07:00","Sleep","7.5 hours","sleep"] ]},
+  5: { tag: "Jummah + wife", items: [
+    ["07:00","07:15","Wake up, Fajr","","routine"],
+    ["07:15","08:15","Full SAVERS","Invite your wife when she stays over","routine"],
+    ["08:15","08:45","Breakfast","","routine"],
+    ["08:45","10:30","Study + chores","Laundry, clean room, light coursework","study"],
+    ["10:30","11:30","Ghusl, prepare for Jummah","Check your masjid's khutbah time","faith"],
+    ["11:30","14:00","Jummah","Travel, prayer, return","faith"],
+    ["14:00","21:00","Time with your wife","She comes to your dorm","wife"],
+    ["21:00","22:30","Free time","She leaves by about 21:00 if travelling home","routine"],
+    ["22:30","23:00","Screens off","","routine"],
+    ["23:00","06:00","Sleep","7 hours","sleep"] ]},
+  6: { tag: "Work + wife's area", items: [...morning,
+    ["08:00","17:00","Work at Rostics","","work"],
+    ["17:00","18:30","Travel to your wife's area","About 1.5 hours","travel"],
+    ["18:30","21:00","Evening together","Dinner, walk, time to talk","wife"],
+    ["21:00","22:30","Travel home","","travel"],
+    ["22:30","23:15","Wind down","","routine"],
+    ["23:30","07:30","Sleep","8 hours","sleep"] ]},
+  0: { tag: "Free day + weekly reset", items: [
+    ["07:30","07:45","Wake up, Fajr","","routine"],
+    ["07:45","08:45","Full SAVERS","Longer workout or a walk outside","routine"],
+    ["08:45","09:15","Breakfast","","routine"],
+    ["09:15","12:15","Study block","Projects and catch-up for the week","study"],
+    ["12:15","13:00","Lunch, Dhuhr","","faith"],
+    ["13:00","18:00","Wife or rest","Visit each other, or rest if tired","wife"],
+    ["18:00","19:30","Cook for Mon to Wed","Lunches and snacks for work days","routine"],
+    ["19:30","20:30","Weekly planning","Assignments, study tasks, work hours","study"],
+    ["20:30","22:30","Free time","Family calls, relax","routine"],
+    ["22:30","23:00","Screens off","Prepare work clothes","routine"],
+    ["23:00","06:00","Sleep","7 hours","sleep"] ]}
+};
+const NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const m = s => { const [h, mi] = s.split(":").map(Number); return h * 60 + mi; };
+const span = it => { const s = m(it[0]); let e = m(it[1]); if (e <= s) e += 1440; return [s, e]; };
+const fmtDur = d => d >= 60 ? `${Math.floor(d / 60)} h ${d % 60 ? (d % 60) + " min" : ""}`.trim() : `${d} min`;
+
+function moscowNow() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Moscow", weekday: "short", hour: "2-digit", minute: "2-digit",
+    day: "numeric", month: "long", year: "numeric", hourCycle: "h23"
+  }).formatToParts(new Date());
+  const p = Object.fromEntries(parts.map(x => [x.type, x.value]));
+  const wd = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(p.weekday);
+  return { wd, min: +p.hour * 60 + +p.minute, hh: p.hour, mm: p.minute, date: `${p.day} ${p.month} ${p.year}` };
+}
+
+function itemHTML(it, state) {
+  const [label, v] = CAT[it[4]];
+  return `<li class="${state}"><span class="t">${it[0]}–${it[1]}</span><div class="body">
+    <span class="title"><span class="dot" style="--c:var(${v})" title="${label}"></span>${it[2]}</span>
+    ${it[3] ? `<span class="n">${it[3]}</span>` : ""}</div></li>`;
+}
+
+// Find what is happening now: today's items, or last night's sleep that crosses midnight.
+function locate(now) {
+  const day = WEEK[now.wd].items, t = now.min;
+  for (let i = 0; i < day.length; i++) {
+    const [s, e] = span(day[i]);
+    if (t >= s && t < e) return { cur: day[i], s, e, next: day[i + 1] || WEEK[(now.wd + 1) % 7].items[0], idx: i, nextStart: day[i + 1] ? m(day[i + 1][0]) : 1440 + m(WEEK[(now.wd + 1) % 7].items[0][0]) };
+  }
+  const prev = WEEK[(now.wd + 6) % 7].items, ps = prev[prev.length - 1];
+  const [s, e] = span(ps);
+  if (t < e - 1440) return { cur: ps, s: s - 1440, e: e - 1440, next: day[0], idx: -1, nextStart: m(day[0][0]) };
+  for (let i = 0; i < day.length; i++) if (m(day[i][0]) > t) return { cur: null, next: day[i], idx: i - 0.5, nextStart: m(day[i][0]) };
+  return { cur: null, next: day[0], idx: day.length, nextStart: 1440 + m(day[0][0]) };
+}
+
+function render() {
+  const now = moscowNow();
+  document.getElementById("clock").textContent = `${now.hh}:${now.mm}`;
+  document.getElementById("dayname").textContent = NAMES[now.wd];
+  document.getElementById("dateline").textContent = now.date;
+  document.getElementById("todayTag").textContent = WEEK[now.wd].tag;
+
+  const loc = locate(now);
+  if (loc.cur) {
+    document.getElementById("nowWhat").textContent = loc.cur[2];
+    document.getElementById("nowNote").textContent = `${loc.cur[0]}–${loc.cur[1]}${loc.cur[3] ? " · " + loc.cur[3] : ""}`;
+    const pct = Math.min(100, Math.max(0, (now.min - loc.s) / (loc.e - loc.s) * 100));
+    document.getElementById("nowBar").style.width = pct + "%";
+  } else {
+    document.getElementById("nowWhat").textContent = "Short break";
+    document.getElementById("nowNote").textContent = "Between activities";
+    document.getElementById("nowBar").style.width = "0%";
+  }
+  document.getElementById("nextWhat").textContent = `${loc.next[2]} at ${loc.next[0]}`;
+  document.getElementById("nextIn").textContent = "in " + fmtDur(Math.max(0, loc.nextStart - now.min));
+
+  document.getElementById("todayList").innerHTML = WEEK[now.wd].items.map((it, i) =>
+    itemHTML(it, i === loc.idx ? "current" : (i < loc.idx ? "past" : ""))).join("");
+
+  const week = document.getElementById("week");
+  const open = new Set([...week.querySelectorAll("details[open]")].map(d => d.dataset.d));
+  week.innerHTML = [1,2,3,4,5,6].map(k => (now.wd + k) % 7).map(d => `
+    <details data-d="${d}" ${open.has(String(d)) ? "open" : ""}>
+      <summary><span class="d">${NAMES[d]}</span><span class="tag">${WEEK[d].tag}</span></summary>
+      <ol class="tl">${WEEK[d].items.map(it => itemHTML(it, "")).join("")}</ol>
+    </details>`).join("");
+}
+
+document.getElementById("legend").innerHTML = Object.values(CAT).map(([l, v]) =>
+  `<span><span class="dot" style="--c:var(${v})"></span>${l}</span>`).join("");
+render();
+setInterval(render, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
