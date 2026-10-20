@@ -169,7 +169,7 @@ const morning = [
 ];
 const toClass = [
   ["17:00","17:40","Travel to HSE","15 min walk + 20 min metro","travel"],
-  ["17:40","18:00","Dinner","Eat before class","routine"],
+  ["17:40","18:00","Light snack","Keep it light; dinner after class","routine"],
   ["18:00","21:00","Class at HSE","In person","class"],
   ["21:05","22:00","Travel home","Light review or a podcast","travel"]
 ];
@@ -177,14 +177,16 @@ const WEEK = {
   1: { tag: "Work + class", items: [...morning,
     ["08:00","17:00","Work at Rostics","Lunch: eat, then call your wife; pray on breaks","work"],
     ...toClass,
-    ["22:00","22:45","Wind down","Shower, lay out clothes, call your wife","routine"],
-    ["22:45","23:00","Screens off","Set tomorrow's intention","routine"],
+    ["22:00","22:30","Dinner","Reheat food you cooked on Sunday","routine"],
+    ["22:30","22:50","Wind down","Shower, lay out clothes, call your wife","routine"],
+    ["22:50","23:00","Screens off","Set tomorrow's intention","routine"],
     ["23:00","06:00","Sleep","7 hours","sleep"] ]},
   2: { tag: "Work + class, early night", items: [...morning,
     ["08:00","17:00","Work at Rostics","Lunch call with your wife","work"],
     ...toClass,
-    ["22:00","22:15","Prepare for Wednesday","Uniform out, food packed, alarm 4:45","routine"],
-    ["22:15","04:45","Sleep","6.5 hours, no phone in bed","sleep"] ]},
+    ["22:00","22:20","Dinner","Quick and light; reheat Sunday's food","routine"],
+    ["22:20","22:30","Prepare for Wednesday","Uniform out, food packed, alarm 4:45","routine"],
+    ["22:30","04:45","Sleep","6 h 15 min, no phone in bed","sleep"] ]},
   3: { tag: "Early shift + class", items: [
     ["04:45","04:50","Wake up","Bright light, glass of water","routine"],
     ["04:50","05:05","Micro SAVERS","Silence, affirmations, visualization; Fajr when its time enters","routine"],
@@ -192,7 +194,8 @@ const WEEK = {
     ["05:35","06:25","Commute to work","Reading on the metro","travel"],
     ["06:30","17:00","Early shift at Rostics","15 min power nap on your break","work"],
     ...toClass,
-    ["22:00","22:45","Wind down","Call your wife; no alarm for Thursday","routine"],
+    ["22:00","22:30","Dinner","","routine"],
+    ["22:30","22:50","Wind down","Call your wife; no alarm for Thursday","routine"],
     ["23:00","07:30","Sleep","8.5 hours","sleep"] ]},
   4: { tag: "Study + two classes", items: [
     ["07:30","07:45","Wake up, Fajr","Pray before sunrise","routine"],
@@ -201,11 +204,12 @@ const WEEK = {
     ["09:00","12:30","Deep study","Assignments, coding, projects; 50 min on, 10 off","study"],
     ["12:30","13:00","Lunch, Dhuhr","","faith"],
     ["13:00","16:00","Online class","From your dorm","class"],
-    ["16:00","17:00","Dinner, rest, Asr","Short walk outside","routine"],
+    ["16:00","17:00","Light snack, rest, Asr","Short walk outside","routine"],
     ["17:05","17:55","Travel to HSE","20 min walk + 30 min metro","travel"],
     ["18:00","21:00","Class at HSE","In person","class"],
     ["21:05","22:00","Travel home","","travel"],
-    ["22:00","23:15","Free time","Call your wife, relax, plan Friday","wife"],
+    ["22:00","22:30","Dinner","","routine"],
+    ["22:30","23:15","Free time","Call your wife, relax, plan Friday","wife"],
     ["23:30","07:00","Sleep","7.5 hours","sleep"] ]},
   5: { tag: "Jummah + wife", items: [
     ["07:00","07:15","Wake up, Fajr","","routine"],
